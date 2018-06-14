@@ -13,7 +13,7 @@ applications:
 
 - name: i307170-module
   host: i307170-module
-  path: target\TextAnonymizationAPP-0.0.1-SNAPSHOT.jar
+  path: target/TextAnonymizationAPP-0.0.1-SNAPSHOT.jar
   memory: 400M
   buildpack: sap_java_buildpack
   health-check-type: none
