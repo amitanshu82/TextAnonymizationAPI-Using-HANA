@@ -2,6 +2,7 @@ package io.poc.text.anym.dbservices;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -20,12 +21,12 @@ static String hanaPassword = "Qq20iy9tT_ipeTOkny-b15LMk6L9qE-SnHlgAMS.gdMXw1TTtr
 static String hanaSchema = "DLP";
 static int queryResult = 0;
 static DataSource ds = null;
-static Connection connection = null;
 static int maxID = 0;
 
 
 public static int gettables()
 {
+	Connection connection = null;
 	try
 	 {	   
        if (ds == null){
@@ -36,12 +37,11 @@ public static int gettables()
            else
         	   System.out.println("Data Source not Created for CF DB connection.");
        }
-       if (connection == null){
-           connection = ds.getConnection();
-       }
-       if(connection != null){
-          System.out.println("Connection to DB successful...");
-       }
+       
+       connection = ds.getConnection();        connection = ds.getConnection();
+        if(connection != null)
+            System.out.println("Connection to DB successful...");
+            else System.out.println("Connection to DB is not successful...");
 	   Statement stmt = connection.createStatement();
 	   String sqlquery = "SELECT * FROM \"DLP\".\"TestHana.HDBModule::inputTable\"";
 	   System.out.println("Query that is fired "+sqlquery);
@@ -54,10 +54,15 @@ public static int gettables()
 	   System.out.println("Records in input table  '"+queryResult+"'");
 	   resultSet1.close();
 	   stmt.close();
-	 }
-	 catch(Exception e) {
+	 }catch(Exception e) {
 		 System.out.println("Printing stack trace : ");
 		 e.printStackTrace();
+     }finally {
+            if (connection != null) {
+                try {
+                	connection.close();
+                } catch (SQLException e) {}
+            }
      }
 	return queryResult;
 }
@@ -66,6 +71,7 @@ public static ResultSet getData( int id)
 {
 ResultSet resultSet = null;
 ResultSet resultSet1 = null;
+Connection connection = null;
 try
 {
        
@@ -77,13 +83,10 @@ try
           else
           System.out.println("Data Source not Created for CF DB connection.");
         }
-       if (connection == null){
-           connection = ds.getConnection();
-        }
-       if(connection != null){
-          System.out.println("Connection to DB successful...");
-       }
-	 
+       connection = ds.getConnection();
+       if(connection != null)
+         System.out.println("Connection to DB successful...");
+       else System.out.println("Connection to DB is not successful...");		 
        Statement stmt = connection.createStatement();
 	   String sqlquery = "SELECT * FROM \"$TA_TestHana.HDBModule::EXT_Core.hdbfulltextindex\" where ID = " + id +"  AND TA_TYPE IN ( 'PERSON', 'COUNTRY', 'EMPLOYEE_ID','URI/EMAIL', 'URI/URL', 'ORGANIZATION', 'CURRENCY', 'PHONE' )  ";
 	   System.out.println("Query that is fired "+sqlquery);
@@ -94,12 +97,19 @@ try
 	   
 	}
 	catch(Exception e) {
-	 }
+	 }finally {
+            if (connection != null) {
+                try {
+                	connection.close();
+                } catch (SQLException e) {}
+            }
+     }
 	return resultSet;
 }
 
 public static int insertData( ArrayList<TextInput> textinput) {
 int rows = 0;
+Connection connection = null;
 try
 {
     String sqlquery = new String();
@@ -111,12 +121,11 @@ try
      else
         System.out.println("Data Source not Created for CF DB connection.");
     }
-    if (connection == null){
     connection = ds.getConnection();
-    }
-    if(connection != null){
+    if(connection != null)
       System.out.println("Connection to DB successful...");
-    }
+      else System.out.println("Connection to DB is not successful...");
+
 	   Statement stmt = connection.createStatement();
 	   Iterator<TextInput> iterator = textinput.iterator();
 	   int inputID = 0;
@@ -134,12 +143,18 @@ try
 		  }
 }		catch(Exception e) {
  
+}finally {
+    if (connection != null) {
+        try {
+        	connection.close();
+        } catch (SQLException e) {}
+    }
 }
 return rows ;
 }
 
 public static int getMaxId() {
-// TODO Auto-generated method stub
+Connection connection = null;
 try
 {
     String sqlquery = new String();
@@ -151,12 +166,10 @@ if (ds == null){
      else
         System.out.println("Data Source not Created for CF DB connection.");
   }
- if (connection == null){
-     connection = ds.getConnection();
-  }
- if(connection != null){
-    System.out.println("Connection to DB successful...");
- }
+connection = ds.getConnection();
+if(connection != null)
+  System.out.println("Connection to DB successful...");
+  else System.out.println("Connection to DB is not successful...");
  Statement stmt = connection.createStatement();
  sqlquery = "SELECT MAX(ID) FROM \"DLP\".\"TestHana.HDBModule::inputTable\" " ;
    System.out.println("Query that is fired "+sqlquery);
@@ -169,7 +182,13 @@ if (ds == null){
    rs.close();
   }catch(Exception e) {
 	 
- }
+ }finally {
+     if (connection != null) {
+         try {
+         	connection.close();
+         } catch (SQLException e) {}
+     }
+}
 return maxID;
 }
 }
