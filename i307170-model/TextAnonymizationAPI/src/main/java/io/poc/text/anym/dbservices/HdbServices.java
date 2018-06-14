@@ -5,8 +5,6 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.concurrent.TimeUnit;
-
 import javax.sql.DataSource;
 
 import io.poc.text.anym.app.entity.TextInput;
