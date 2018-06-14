@@ -82,15 +82,9 @@ try
        }
 	 
        Statement stmt = connection.createStatement();
-	   String sqlquery = "SELECT * FROM \"$TA_TestHana.HDBModule::EXT_Core.hdbfulltextindex\" where ID = " + id +"  AND TA_TYPE IN ( 'PERSON', 'COUNTRY', 'EMPLOYEE_ID','URI/EMAIL', 'URI/URL', 'ORGANIZATION', 'CURRENCY', 'PHONE' )  ";
+	   String sqlquery = "SELECT * FROM \"DLP\".\"$TA_TestHana.HDBModule::EXT_Core.hdbfulltextindex\" where ID = " + id +"  AND TA_TYPE IN ( 'PERSON', 'COUNTRY', 'EMPLOYEE_ID','URI/EMAIL', 'URI/URL', 'ORGANIZATION', 'CURRENCY', 'PHONE' )  ";
 	   System.out.println("Query that is fired "+sqlquery);
-	   do {
-			if (fireSelectQuery > 5)
-				break;
-			TimeUnit.SECONDS.sleep(1);
-		   fireSelectQuery = fireSelectQuery + 1;
-		    resultSet1 = stmt.executeQuery(sqlquery);
-		   }while(resultSet1 == null );
+	   resultSet1 = stmt.executeQuery(sqlquery);
 	   resultSet = resultSet1;
 	   resultSet1.close();
 	   stmt.close();
@@ -171,3 +165,5 @@ if (ds == null){
 return maxID;
 }
 }
+
+
