@@ -38,7 +38,6 @@ public static int gettables()
        }
        if (connection == null){
            connection = ds.getConnection();
-           connection.setAutoCommit(true);
        }
        if(connection != null){
           System.out.println("Connection to DB successful...");
@@ -114,7 +113,6 @@ try
     }
     if (connection == null){
     connection = ds.getConnection();
-    connection.setAutoCommit(true);
     }
     if(connection != null){
       System.out.println("Connection to DB successful...");
@@ -155,7 +153,6 @@ if (ds == null){
   }
  if (connection == null){
      connection = ds.getConnection();
-     connection.setAutoCommit(true);
   }
  if(connection != null){
     System.out.println("Connection to DB successful...");
