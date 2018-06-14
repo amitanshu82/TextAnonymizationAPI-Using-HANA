@@ -46,12 +46,12 @@ public class TextAnonymizationApiAppController {
 		 	textinput.add(textin);	 	
 		}
 		
-		int rows = io.poc.text.anym.dbservices.HdbServices.processData(textinput);
+		int rows = io.poc.text.anym.dbservices.HdbServices.insertData(textinput);
 		if (rows != 0)
 		resultSet = io.poc.text.anym.dbservices.HdbServices.getData(maxid + 1);
 		
 		if (resultSet != null){
-		while(resultSet.next()){
+			while(resultSet.next()){
 		    TextAnonym txtanym = new TextAnonym();
 		    txtanym.setTa_token(resultSet.getNString("TA_TOKEN"));
 		    txtanym.setTa_type(resultSet.getString("TA_TYPE"));

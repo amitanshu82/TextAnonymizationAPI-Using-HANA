@@ -30,7 +30,11 @@ public static int gettables()
 	 {	   
        if (ds == null){
            ds = io.poc.text.anym.dbservices.HANADataSourceCreator.createHanaDataSource(hanaHost, hanaPort, hanaUser, hanaPassword, hanaSchema);
-           System.out.println("Data Source Created for CF DB connection.");
+           if (ds != null)
+               System.out.println("Data Source Created for CF DB connection.");
+               
+           else
+        	   System.out.println("Data Source not Created for CF DB connection.");
        }
        if (connection == null){
            connection = ds.getConnection();
@@ -68,11 +72,14 @@ try
        
        if (ds == null){
           ds = io.poc.text.anym.dbservices.HANADataSourceCreator.createHanaDataSource(hanaHost, hanaPort, hanaUser, hanaPassword, hanaSchema);
+          if (ds != null)
           System.out.println("Data Source Created for CF DB connection.");
+          
+          else
+          System.out.println("Data Source not Created for CF DB connection.");
         }
        if (connection == null){
            connection = ds.getConnection();
-           connection.setAutoCommit(true);
         }
        if(connection != null){
           System.out.println("Connection to DB successful...");
@@ -92,15 +99,18 @@ try
 	return resultSet;
 }
 
-public static int processData( ArrayList<TextInput> textinput) {
+public static int insertData( ArrayList<TextInput> textinput) {
 int rows = 0;
-System.out.println("Connection to DB successful...");
 try
 {
     String sqlquery = new String();
     if (ds == null){
     ds = io.poc.text.anym.dbservices.HANADataSourceCreator.createHanaDataSource(hanaHost, hanaPort, hanaUser, hanaPassword, hanaSchema);
-    System.out.println("Data Source Created for CF DB connection.");
+    if (ds != null)
+        System.out.println("Data Source Created for CF DB connection.");
+    
+     else
+        System.out.println("Data Source not Created for CF DB connection.");
     }
     if (connection == null){
     connection = ds.getConnection();
@@ -122,8 +132,6 @@ try
 		   sqlquery = "insert into \"TestHana.HDBModule::inputTable\" values (" + inputID +","+ "'"+inputString+"'" +");" ;
 		   System.out.println("Query that is fired "+sqlquery);
 		   rows = stmt.executeUpdate(sqlquery);
-		   stmt.close();
-		   connection.close();
 	     
 		  }
 }		catch(Exception e) {
@@ -139,7 +147,11 @@ try
     String sqlquery = new String();
 if (ds == null){
     ds = io.poc.text.anym.dbservices.HANADataSourceCreator.createHanaDataSource(hanaHost, hanaPort, hanaUser, hanaPassword, hanaSchema);
-    System.out.println("Data Source Created for CF DB connection.");
+    if (ds != null)
+        System.out.println("Data Source Created for CF DB connection.");
+    
+     else
+        System.out.println("Data Source not Created for CF DB connection.");
   }
  if (connection == null){
      connection = ds.getConnection();
