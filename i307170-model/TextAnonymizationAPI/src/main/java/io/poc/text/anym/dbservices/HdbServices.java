@@ -122,6 +122,8 @@ try
 		   sqlquery = "insert into \"TestHana.HDBModule::inputTable\" values (" + inputID +","+ "'"+inputString+"'" +");" ;
 		   System.out.println("Query that is fired "+sqlquery);
 		   rows = stmt.executeUpdate(sqlquery);
+		   stmt.close();
+		   connection.close();
 	     
 		  }
 }		catch(Exception e) {
