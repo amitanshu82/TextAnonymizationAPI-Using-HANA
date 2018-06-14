@@ -65,7 +65,6 @@ public static ResultSet getData( int id)
 {
 ResultSet resultSet = null;
 ResultSet resultSet1 = null;
-int fireSelectQuery = 0;
 try
 {
        
@@ -82,7 +81,7 @@ try
        }
 	 
        Statement stmt = connection.createStatement();
-	   String sqlquery = "SELECT * FROM \"DLP\".\"$TA_TestHana.HDBModule::EXT_Core.hdbfulltextindex\" where ID = " + id +"  AND TA_TYPE IN ( 'PERSON', 'COUNTRY', 'EMPLOYEE_ID','URI/EMAIL', 'URI/URL', 'ORGANIZATION', 'CURRENCY', 'PHONE' )  ";
+	   String sqlquery = "SELECT * FROM \"$TA_TestHana.HDBModule::EXT_Core.hdbfulltextindex\" where ID = " + id +"  AND TA_TYPE IN ( 'PERSON', 'COUNTRY', 'EMPLOYEE_ID','URI/EMAIL', 'URI/URL', 'ORGANIZATION', 'CURRENCY', 'PHONE' )  ";
 	   System.out.println("Query that is fired "+sqlquery);
 	   resultSet1 = stmt.executeQuery(sqlquery);
 	   resultSet = resultSet1;
