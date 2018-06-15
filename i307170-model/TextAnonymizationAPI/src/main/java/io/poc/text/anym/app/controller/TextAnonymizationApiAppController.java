@@ -35,8 +35,7 @@ public class TextAnonymizationApiAppController {
 	  {
 		TextInput textin = new TextInput();
 		ArrayList<TextInput> textinput = new ArrayList<TextInput>();
-		List<TextAnonym> textanonym = new ArrayList<TextAnonym>();
-		ResultSet resulSetIndex = null;
+		ArrayList<TextAnonym> textanonym = new ArrayList<TextAnonym>();
 		int strlen = text_input.length();
 		int insertID = 0;
 		int maxid = io.poc.text.anym.dbservices.HdbServices.getMaxId();
@@ -51,23 +50,7 @@ public class TextAnonymizationApiAppController {
 		int rows = io.poc.text.anym.dbservices.HdbServices.insertData(textinput);
 		System.out.println("No or rows insertde " + rows );
 
-		resulSetIndex = io.poc.text.anym.dbservices.HdbServices.getData(insertID);
-	    try {
-	    if (resulSetIndex != null){
-			while(resulSetIndex.next()){
-			    TextAnonym txtanym = new TextAnonym();
-			    txtanym.setTa_token(resulSetIndex.getNString("TA_TOKEN"));
-			    txtanym.setTa_type(resulSetIndex.getString("TA_TYPE"));
-			    textanonym.add(txtanym);
-			}
-			io.poc.text.anym.dbservices.HdbServices.contoindex.close();
-			io.poc.text.anym.dbservices.HdbServices.resultSetIndex.close();
-	    }
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				
-			  }
+		textanonym = io.poc.text.anym.dbservices.HdbServices.getData(insertID);
 	    return textanonym; 
 	  }
  
@@ -75,25 +58,8 @@ public class TextAnonymizationApiAppController {
 	
 	public List<TextAnonym > getText( @PathVariable(value="ID") Integer id ) throws SQLException
 	  {
-		List<TextAnonym> textanonym = new ArrayList<TextAnonym>();
-		ResultSet resulSetIndex = null;
-		resulSetIndex = io.poc.text.anym.dbservices.HdbServices.getData(id);
-	    try {
-	    if (resulSetIndex != null){
-			while(resulSetIndex.next()){
-			    TextAnonym txtanym = new TextAnonym();
-			    txtanym.setTa_token(resulSetIndex.getNString("TA_TOKEN"));
-			    txtanym.setTa_type(resulSetIndex.getString("TA_TYPE"));
-			    textanonym.add(txtanym);
-			}
-			
-			io.poc.text.anym.dbservices.HdbServices.contoindex.close();
-			io.poc.text.anym.dbservices.HdbServices.resultSetIndex.close();
-	    }
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		ArrayList<TextAnonym> textanonym = new ArrayList<TextAnonym>();
+		textanonym= io.poc.text.anym.dbservices.HdbServices.getData(id);
 			return textanonym; 
 	  }
 

@@ -6,8 +6,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-
 import javax.sql.DataSource;
 
 import io.poc.text.anym.app.entity.TextAnonym;
@@ -25,8 +23,6 @@ static String hanaSchema = "DLP";
 static int queryResult = 0;
 static DataSource ds = null;
 static int maxID = 0;
-public static Connection contoindex;
-public static ResultSet resultSetIndex = null;
 
 
 public static int getinputtables()
@@ -158,9 +154,10 @@ public static int getindextables(int id)
 	return queryResult;
 }
 // Method to get data from $TA Index table
-public static ResultSet getData( int id)
+public static ArrayList<TextAnonym> getData( int id)
 {
- contoindex = null;
+ Connection connection = null;
+ ArrayList<TextAnonym> textanonym = new ArrayList<TextAnonym>();
 try
 {
        
@@ -172,20 +169,34 @@ try
           else
           System.out.println("Data Source not Created for CF DB connection.");
         }
-       contoindex = ds.getConnection();
-       if(contoindex != null)
+       connection = ds.getConnection();
+       if(connection != null)
          System.out.println("Connection to DB successful...");
        else System.out.println("Connection to DB is not successful...");		 
-       Statement stmt = contoindex.createStatement();
+       Statement stmt = connection.createStatement();
 	   String sqlquery = "SELECT * FROM \"DLP\".\"$TA_TestHana.HDBModule::EXT_Core.hdbfulltextindex\" where ID = " + id +"  AND TA_TYPE IN ( 'PERSON', 'COUNTRY', 'EMPLOYEE_ID','URI/EMAIL', 'URI/URL', 'ORGANIZATION', 'CURRENCY', 'PHONE' )  ";
 	   System.out.println("Query that is fired "+sqlquery);
-	   resultSetIndex = stmt.executeQuery(sqlquery);
-	   stmt.close();
-	   
-	}
+	   ResultSet resultSetIndex = stmt.executeQuery(sqlquery);
+	   if (resultSetIndex != null){
+			while(resultSetIndex.next()){
+			    TextAnonym txtanym = new TextAnonym();
+			    txtanym.setTa_token(resultSetIndex.getNString("TA_TOKEN"));
+			    txtanym.setTa_type(resultSetIndex.getString("TA_TYPE"));
+			    textanonym.add(txtanym);
+		}
+			resultSetIndex.close();
+			stmt.close();
+	   }
+}
 	catch(Exception e) {
-	 }
-	return resultSetIndex;
+	 }finally {
+		    if (connection != null) {
+		        try {
+		        	connection.close();
+		        } catch (SQLException e) {}
+		    }
+		}
+	return  textanonym;
 }
 
 
