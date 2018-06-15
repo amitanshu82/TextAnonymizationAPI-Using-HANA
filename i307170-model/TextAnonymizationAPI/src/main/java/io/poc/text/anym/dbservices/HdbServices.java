@@ -6,8 +6,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+
 import javax.sql.DataSource;
 
+import io.poc.text.anym.app.entity.TextAnonym;
 import io.poc.text.anym.app.entity.TextInput;
 
 public  class HdbServices {
@@ -67,9 +70,8 @@ public static int gettables()
 	return queryResult;
 }
 
-public static ResultSet getData( int id)
+public static List<TextAnonym > getData( int id)
 {
-ResultSet resultSet = null;
 ResultSet resultSet1 = null;
 Connection connection = null;
 try
@@ -88,11 +90,9 @@ try
          System.out.println("Connection to DB successful...");
        else System.out.println("Connection to DB is not successful...");		 
        Statement stmt = connection.createStatement();
-	   String sqlquery = "SELECT * FROM \"$TA_TestHana.HDBModule::EXT_Core.hdbfulltextindex\" where ID = " + id +"  AND TA_TYPE IN ( 'PERSON', 'COUNTRY', 'EMPLOYEE_ID','URI/EMAIL', 'URI/URL', 'ORGANIZATION', 'CURRENCY', 'PHONE' )  ";
+	   String sqlquery = "SELECT * FROM \"DLP\".\"$TA_TestHana.HDBModule::EXT_Core.hdbfulltextindex\" where ID = " + id +"  AND TA_TYPE IN ( 'PERSON', 'COUNTRY', 'EMPLOYEE_ID','URI/EMAIL', 'URI/URL', 'ORGANIZATION', 'CURRENCY', 'PHONE' )  ";
 	   System.out.println("Query that is fired "+sqlquery);
 	   resultSet1 = stmt.executeQuery(sqlquery);
-	   resultSet = resultSet1;
-	   resultSet1.close();
 	   stmt.close();
 	   
 	}
@@ -104,7 +104,23 @@ try
                 } catch (SQLException e) {}
             }
      }
-	return resultSet;
+    List<TextAnonym> textanonym = new ArrayList<TextAnonym>();
+    try {
+    if (resultSet1 != null){
+		while(resultSet1.next()){
+		    TextAnonym txtanym = new TextAnonym();
+		    txtanym.setTa_token(resultSet1.getNString("TA_TOKEN"));
+		    txtanym.setTa_type(resultSet1.getString("TA_TYPE"));
+		    textanonym.add(txtanym);
+		}
+		
+			resultSet1.close();
+    }
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	return textanonym;
 }
 
 public static int insertData( ArrayList<TextInput> textinput) {

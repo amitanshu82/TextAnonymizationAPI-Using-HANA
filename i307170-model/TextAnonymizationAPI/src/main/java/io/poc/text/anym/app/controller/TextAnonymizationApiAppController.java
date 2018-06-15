@@ -1,6 +1,5 @@
 package io.poc.text.anym.app.controller;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +35,6 @@ public class TextAnonymizationApiAppController {
 		TextInput textin = new TextInput();
 		ArrayList<TextInput> textinput = new ArrayList<TextInput>();
 		List<TextAnonym> textanonym = new ArrayList<TextAnonym>();
-		ResultSet resultSet = null;
 		int strlen = text_input.length();
 		int maxid = io.poc.text.anym.dbservices.HdbServices.getMaxId();
 		if(strlen <= 5000)
@@ -48,17 +46,8 @@ public class TextAnonymizationApiAppController {
 		
 		int rows = io.poc.text.anym.dbservices.HdbServices.insertData(textinput);
 		if (rows != 0)
-		resultSet = io.poc.text.anym.dbservices.HdbServices.getData(maxid + 1);
+		textanonym = io.poc.text.anym.dbservices.HdbServices.getData(maxid + 1);
 		
-		if (resultSet != null){
-			while(resultSet.next()){
-		    TextAnonym txtanym = new TextAnonym();
-		    txtanym.setTa_token(resultSet.getNString("TA_TOKEN"));
-		    txtanym.setTa_type(resultSet.getString("TA_TYPE"));
-		    textanonym.add(txtanym);
-		}
-		resultSet.close();
-	  }
 		return textanonym; 
 	  }
  
@@ -67,17 +56,7 @@ public class TextAnonymizationApiAppController {
 	public List<TextAnonym > getText( @PathVariable(value="ID") Integer id ) throws SQLException
 	  {
 		List<TextAnonym> textanonym = new ArrayList<TextAnonym>();
-		ResultSet resultSet = null;
-		resultSet = io.poc.text.anym.dbservices.HdbServices.getData(id);
-		if (resultSet != null){
-			while(resultSet.next()){
-			    TextAnonym txtanym = new TextAnonym();
-			    txtanym.setTa_token(resultSet.getNString("TA_TOKEN"));
-			    txtanym.setTa_type(resultSet.getString("TA_TYPE"));
-			    textanonym.add(txtanym);
-			}
-			resultSet.close();
-		  }
+		textanonym = io.poc.text.anym.dbservices.HdbServices.getData(id);
 			return textanonym; 
 	  }
 
