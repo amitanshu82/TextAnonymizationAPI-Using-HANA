@@ -117,7 +117,52 @@ public class TextAnonymizationApiAppController {
 	public List<TextAnonym > getText( @PathVariable(value="ID") Integer id ) throws SQLException
 	  {
 		List<TextAnonym> textanonym = new ArrayList<TextAnonym>();
-		textanonym = io.poc.text.anym.dbservices.HdbServices.getData(id);
+		ResultSet resultSet1 = null;
+		Connection connection = null;
+		try
+		{		       
+		       if (ds == null){
+		          ds = io.poc.text.anym.dbservices.HANADataSourceCreator.createHanaDataSource(hanaHost, hanaPort, hanaUser, hanaPassword, hanaSchema);
+		          if (ds != null)
+		          System.out.println("Data Source Created for CF DB connection.");
+		          
+		          else
+		          System.out.println("Data Source not Created for CF DB connection.");
+		        }
+		       connection = ds.getConnection();
+		       if(connection != null)
+		         System.out.println("Connection to DB successful...");
+		       else System.out.println("Connection to DB is not successful...");		 
+		       Statement stmt = connection.createStatement();
+			   String sqlquery = "SELECT * FROM \"DLP\".\"$TA_TestHana.HDBModule::EXT_Core.hdbfulltextindex\" where ID = " + id +"  AND TA_TYPE IN ( 'PERSON', 'COUNTRY', 'EMPLOYEE_ID','URI/EMAIL', 'URI/URL', 'ORGANIZATION', 'CURRENCY', 'PHONE' )  ";
+			   System.out.println("Query that is fired "+sqlquery);
+			   resultSet1 = stmt.executeQuery(sqlquery);
+			   stmt.close();
+			   
+			}
+			catch(Exception e) {
+			 }finally {
+		            if (connection != null) {
+		                try {
+		                	connection.close();
+		                } catch (SQLException e) {}
+		            }
+		     }
+		    try {
+		    if (resultSet1 != null){
+				while(resultSet1.next()){
+				    TextAnonym txtanym = new TextAnonym();
+				    txtanym.setTa_token(resultSet1.getNString("TA_TOKEN"));
+				    txtanym.setTa_type(resultSet1.getString("TA_TYPE"));
+				    textanonym.add(txtanym);
+				}
+				
+					resultSet1.close();
+		    }
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			return textanonym; 
 	  }
 
