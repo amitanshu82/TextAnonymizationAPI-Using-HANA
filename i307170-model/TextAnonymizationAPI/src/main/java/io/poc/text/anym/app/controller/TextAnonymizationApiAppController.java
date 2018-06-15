@@ -82,7 +82,7 @@ public class TextAnonymizationApiAppController {
 public int getIndexTable(@PathVariable(value="ID") Integer id ) throws SQLException
   {
 	int tableno = 0;
-	tableno = io.poc.text.anym.dbservices. HdbServices.getindextables();
+	tableno = io.poc.text.anym.dbservices. HdbServices.getindextables(id);
 	return tableno; 
   }
 
