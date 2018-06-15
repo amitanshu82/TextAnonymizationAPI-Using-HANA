@@ -60,7 +60,7 @@ public class TextAnonymizationApiAppController {
 			    txtanym.setTa_type(resulSetIndex.getString("TA_TYPE"));
 			    textanonym.add(txtanym);
 			}
-			
+			io.poc.text.anym.dbservices.HdbServices.contoindex.close();
 			io.poc.text.anym.dbservices.HdbServices.resultSetIndex.close();
 	    }
 			} catch (SQLException e) {
@@ -87,6 +87,7 @@ public class TextAnonymizationApiAppController {
 			    textanonym.add(txtanym);
 			}
 			
+			io.poc.text.anym.dbservices.HdbServices.contoindex.close();
 			io.poc.text.anym.dbservices.HdbServices.resultSetIndex.close();
 	    }
 			} catch (SQLException e) {

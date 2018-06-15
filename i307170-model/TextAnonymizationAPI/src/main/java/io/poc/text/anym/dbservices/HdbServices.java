@@ -25,6 +25,7 @@ static String hanaSchema = "DLP";
 static int queryResult = 0;
 static DataSource ds = null;
 static int maxID = 0;
+public static Connection contoindex;
 public static ResultSet resultSetIndex = null;
 
 
@@ -159,8 +160,7 @@ public static int getindextables(int id)
 // Method to get data from $TA Index table
 public static ResultSet getData( int id)
 {
-ResultSet resultSet1 = null;
-Connection connection = null;
+ contoindex = null;
 try
 {
        
@@ -172,11 +172,11 @@ try
           else
           System.out.println("Data Source not Created for CF DB connection.");
         }
-       connection = ds.getConnection();
-       if(connection != null)
+       contoindex = ds.getConnection();
+       if(contoindex != null)
          System.out.println("Connection to DB successful...");
        else System.out.println("Connection to DB is not successful...");		 
-       Statement stmt = connection.createStatement();
+       Statement stmt = contoindex.createStatement();
 	   String sqlquery = "SELECT * FROM \"DLP\".\"$TA_TestHana.HDBModule::EXT_Core.hdbfulltextindex\" where ID = " + id +"  AND TA_TYPE IN ( 'PERSON', 'COUNTRY', 'EMPLOYEE_ID','URI/EMAIL', 'URI/URL', 'ORGANIZATION', 'CURRENCY', 'PHONE' )  ";
 	   System.out.println("Query that is fired "+sqlquery);
 	   resultSetIndex = stmt.executeQuery(sqlquery);
@@ -184,13 +184,7 @@ try
 	   
 	}
 	catch(Exception e) {
-	 }finally {
-            if (connection != null) {
-                try {
-                	connection.close();
-                } catch (SQLException e) {}
-            }
-     }
+	 }
 	return resultSetIndex;
 }
 
@@ -266,7 +260,7 @@ if(connection != null)
  sqlquery = "SELECT MAX(ID) FROM \"DLP\".\"TestHana.HDBModule::inputTable\" " ;
    System.out.println("Query that is fired "+sqlquery);
    ResultSet rs=stmt.executeQuery(sqlquery);          
-   //Extact result from ResultSet rs
+   //Extract result from ResultSet rs
    while(rs.next()){
        System.out.println("MAX(ID)="+rs.getInt("MAX(ID)")); 
        maxID = rs.getInt("MAX(ID)");
