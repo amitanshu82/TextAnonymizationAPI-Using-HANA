@@ -27,7 +27,7 @@ static DataSource ds = null;
 static int maxID = 0;
 
 
-public static int gettables()
+public static int getinputtables()
 {
 	Connection connection = null;
 	try
@@ -70,6 +70,48 @@ public static int gettables()
 	return queryResult;
 }
 
+public static int getindextables()
+{
+	Connection connection = null;
+	try
+	 {	   
+       if (ds == null){
+           ds = io.poc.text.anym.dbservices.HANADataSourceCreator.createHanaDataSource(hanaHost, hanaPort, hanaUser, hanaPassword, hanaSchema);
+           if (ds != null)
+               System.out.println("Data Source Created for CF DB connection.");
+               
+           else
+        	   System.out.println("Data Source not Created for CF DB connection.");
+       }
+       
+       connection = ds.getConnection();        connection = ds.getConnection();
+        if(connection != null)
+            System.out.println("Connection to DB successful...");
+            else System.out.println("Connection to DB is not successful...");
+	   Statement stmt = connection.createStatement();
+	   String sqlquery = "SELECT * FROM \"DLP\".\"$TA_TestHana.HDBModule::EXT_Core.hdbfulltextindex\"";
+	   System.out.println("Query that is fired "+sqlquery);
+	   ResultSet resultSet1 = stmt.executeQuery(sqlquery);
+	   int queryResult1 = 0; 
+	   while(resultSet1.next()){
+	    queryResult1 = queryResult1 + 1 ;
+	   }
+	   queryResult = queryResult1;
+	   System.out.println("Records in input table  '"+queryResult+"'");
+	   resultSet1.close();
+	   stmt.close();
+	 }catch(Exception e) {
+		 System.out.println("Printing stack trace : ");
+		 e.printStackTrace();
+     }finally {
+            if (connection != null) {
+                try {
+                	connection.close();
+                } catch (SQLException e) {}
+            }
+     }
+	return queryResult;
+}
 public static List<TextAnonym > getData( int id)
 {
 ResultSet resultSet1 = null;
