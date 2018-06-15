@@ -25,6 +25,7 @@ static String hanaSchema = "DLP";
 static int queryResult = 0;
 static DataSource ds = null;
 static int maxID = 0;
+public static ResultSet resultSetIndex = null;
 
 
 public static int getinputtables()
@@ -156,7 +157,7 @@ public static int getindextables(int id)
 	return queryResult;
 }
 // Method to get data from $TA Index table
-public static List<TextAnonym > getData( int id)
+public static ResultSet getData( int id)
 {
 ResultSet resultSet1 = null;
 Connection connection = null;
@@ -178,7 +179,7 @@ try
        Statement stmt = connection.createStatement();
 	   String sqlquery = "SELECT * FROM \"DLP\".\"$TA_TestHana.HDBModule::EXT_Core.hdbfulltextindex\" where ID = " + id +"  AND TA_TYPE IN ( 'PERSON', 'COUNTRY', 'EMPLOYEE_ID','URI/EMAIL', 'URI/URL', 'ORGANIZATION', 'CURRENCY', 'PHONE' )  ";
 	   System.out.println("Query that is fired "+sqlquery);
-	   resultSet1 = stmt.executeQuery(sqlquery);
+	   resultSetIndex = stmt.executeQuery(sqlquery);
 	   stmt.close();
 	   
 	}
@@ -190,23 +191,7 @@ try
                 } catch (SQLException e) {}
             }
      }
-    List<TextAnonym> textanonym = new ArrayList<TextAnonym>();
-    try {
-    if (resultSet1 != null){
-		while(resultSet1.next()){
-		    TextAnonym txtanym = new TextAnonym();
-		    txtanym.setTa_token(resultSet1.getNString("TA_TOKEN"));
-		    txtanym.setTa_type(resultSet1.getString("TA_TYPE"));
-		    textanonym.add(txtanym);
-		}
-		
-			resultSet1.close();
-    }
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	return textanonym;
+	return resultSetIndex;
 }
 
 
