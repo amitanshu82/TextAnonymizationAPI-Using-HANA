@@ -41,6 +41,7 @@ public class TextAnonymizationApiAppController {
 		int maxid = io.poc.text.anym.dbservices.HdbServices.getMaxId();
 		insertID = maxid + 1;
 		text_input = text_input.replace("'" , "");
+		text_input = text_input.replace("‘" , "");
 		if(strlen <= 5000)
 		{
 			textin.setId(insertID);
@@ -61,15 +62,20 @@ public class TextAnonymizationApiAppController {
 	  {
 		ArrayList<TextAnonym> textanonym = new ArrayList<TextAnonym>();
 		textanonym= io.poc.text.anym.dbservices.HdbServices.getData(id);
+		int loop = 0;
+		do{
 		if (textanonym == null ){
-		try {
+		try {		
 			Thread.sleep(2000);
 			textanonym= io.poc.text.anym.dbservices.HdbServices.getData(id);
+			
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		}
+		loop++;
+		}while(loop <=5 );
 			
 			return textanonym; 
 	  }
