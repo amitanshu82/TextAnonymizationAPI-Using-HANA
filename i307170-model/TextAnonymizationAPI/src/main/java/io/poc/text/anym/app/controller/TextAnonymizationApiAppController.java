@@ -52,11 +52,12 @@ public class TextAnonymizationApiAppController {
 		System.out.println("No or rows insertde " + rows );
 
 		textanonym = io.poc.text.anym.dbservices.HdbServices.getData(insertID);
+		
 		int loop = 0;
-		do{
-		if (textanonym == null ){
-		try {		
-			Thread.sleep(2000);
+	do{
+		if (textanonym.isEmpty() ){
+	try {		
+	        Thread.sleep(2000);
 			textanonym= io.poc.text.anym.dbservices.HdbServices.getData(insertID);
 			
 		} catch (InterruptedException e) {
@@ -77,10 +78,10 @@ public class TextAnonymizationApiAppController {
 		ArrayList<TextAnonym> textanonym = new ArrayList<TextAnonym>();
 		textanonym= io.poc.text.anym.dbservices.HdbServices.getData(id);
 		int loop = 0;
-		do{
-		if (textanonym == null ){
-		try {		
-			Thread.sleep(2000);
+	do{
+		if (textanonym.isEmpty() ){
+	try {		
+	        Thread.sleep(2000);
 			textanonym= io.poc.text.anym.dbservices.HdbServices.getData(id);
 			
 		} catch (InterruptedException e) {
@@ -90,6 +91,7 @@ public class TextAnonymizationApiAppController {
 		}
 		loop++;
 		}while(loop <=5 );
+			
 			
 			return textanonym; 
 	  }
