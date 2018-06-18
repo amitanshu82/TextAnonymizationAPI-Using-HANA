@@ -52,7 +52,22 @@ public class TextAnonymizationApiAppController {
 		System.out.println("No or rows insertde " + rows );
 
 		textanonym = io.poc.text.anym.dbservices.HdbServices.getData(insertID);
-	    return textanonym; 
+		int loop = 0;
+		do{
+		if (textanonym == null ){
+		try {		
+			Thread.sleep(2000);
+			textanonym= io.poc.text.anym.dbservices.HdbServices.getData(insertID);
+			
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}
+		loop++;
+		}while(loop <=5 );
+			
+			return textanonym;
 	  }
  
 	@RequestMapping(value = "/gettextanonym"+"/{ID}", method = RequestMethod.GET)
