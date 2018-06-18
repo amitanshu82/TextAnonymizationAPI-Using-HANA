@@ -40,6 +40,7 @@ public class TextAnonymizationApiAppController {
 		int insertID = 0;
 		int maxid = io.poc.text.anym.dbservices.HdbServices.getMaxId();
 		insertID = maxid + 1;
+		text_input = text_input.replace("'" , "");
 		if(strlen <= 5000)
 		{
 			textin.setId(insertID);
