@@ -61,6 +61,16 @@ public class TextAnonymizationApiAppController {
 	  {
 		ArrayList<TextAnonym> textanonym = new ArrayList<TextAnonym>();
 		textanonym= io.poc.text.anym.dbservices.HdbServices.getData(id);
+		if (textanonym == null ){
+		try {
+			Thread.sleep(2000);
+			textanonym= io.poc.text.anym.dbservices.HdbServices.getData(id);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}
+			
 			return textanonym; 
 	  }
 
