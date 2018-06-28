@@ -291,12 +291,12 @@ return maxID;
 
 public static int writeDictionary(String textDict) {
 	// TODO Auto-generated method stub
-	return 0;
+	return 1;
 }
 
 public static int writeTextRule(String textRule) {
 	// TODO Auto-generated method stub
-	return 0;
+	return 1;
 }
 }
 
