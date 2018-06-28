@@ -122,4 +122,34 @@ public int getIndexTable(@PathVariable(value="ID") Integer id ) throws SQLExcept
 	return tableno; 
   }
 
+@RequestMapping(value = "/postdictionary"+"/{textDict}", method = RequestMethod.POST)
+
+public String postDictionary(@PathVariable(value="textDict") String textDict ) throws SQLException
+  {
+	int sucess = 1;
+	String result;
+	sucess = io.poc.text.anym.dbservices.HdbServices.writeDictionary(textDict);
+	if(sucess == 0)
+	  result =  "Dictionary Changes are Sucessfull";
+	else
+      result =  "Dictionary Changes are not Sucessfull";
+	
+	return result;
+  }
+
+@RequestMapping(value = "/posttextrule"+"/{textRule}", method = RequestMethod.POST)
+
+public String postTextRule(@PathVariable(value="textRule") String textRule ) throws SQLException
+  {
+	int sucess = 1;
+	String result;
+	sucess = io.poc.text.anym.dbservices.HdbServices.writeTextRule(textRule);
+	if(sucess == 0)
+		result =  "Text Rule Changes are Sucessfull";
+	else
+	    result =  "Text Rule Changes are not Sucessfull";
+		
+		return result;
+  }
+
 }

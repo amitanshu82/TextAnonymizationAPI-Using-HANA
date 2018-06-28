@@ -288,6 +288,16 @@ if(connection != null)
 }
 return maxID;
 }
+
+public static int writeDictionary(String textDict) {
+	// TODO Auto-generated method stub
+	return 0;
+}
+
+public static int writeTextRule(String textRule) {
+	// TODO Auto-generated method stub
+	return 0;
+}
 }
 
 
