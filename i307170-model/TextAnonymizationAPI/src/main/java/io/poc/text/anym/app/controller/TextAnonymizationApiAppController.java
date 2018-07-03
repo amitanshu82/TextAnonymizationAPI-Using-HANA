@@ -35,18 +35,18 @@ public class TextAnonymizationApiAppController {
 		TextInput textin = new TextInput();
 		ArrayList<TextInput> textinput = new ArrayList<TextInput>();
 		ArrayList<TextAnonym> textanonym = new ArrayList<TextAnonym>();
-		int strlen = text_input.length();
+		//int strlen = text_input.length();
 		int insertID = 0;
 		int maxid = io.poc.text.anym.dbservices.HdbServices.getMaxId();
 		insertID = maxid + 1;
 		text_input = text_input.replace("'" , "");
 		text_input = text_input.replace("‘" , "");
-		if(strlen <= 5000)
-		{
+		//if(strlen <= 5000)
+		//{
 			textin.setId(insertID);
 		 	textin.setText(text_input);
 		 	textinput.add(textin);	 	
-		}
+		//}
 		
 		int rows = io.poc.text.anym.dbservices.HdbServices.insertData(textinput);
 		System.out.println("No or rows insertde " + rows );
@@ -143,6 +143,21 @@ public String postTextRule(@PathVariable(value="textRule") String textRule ) thr
   {
 	int sucess = 1;
 	String result;
+	String setRule = "<";
+	int ruleStrLen = textRule.length();
+	int i = 0;
+	//char ruleaArray[]= textRule.toCharArray();
+    for( ; i <= ruleStrLen; i++)
+    {
+    if ((Character.isDigit(textRule.charAt(i)) == true)) {
+    	setRule = setRule + "[A-Z]|[a-z]";
+    } else if ((Character.isAlphabetic(textRule.charAt(i)) == true)) {
+    	setRule = setRule + "[0-9]";
+    } else {
+    	setRule = setRule + textRule.charAt(i) ;
+    }
+    };
+    setRule = setRule + "{" +"ruleStrLen" + "," + "ruleStrLen"+ "}"+ ">";
 	sucess = io.poc.text.anym.dbservices.HdbServices.writeTextRule(textRule);
 	if(sucess == 0)
 		result =  "Text Rule Changes are Sucessfull";

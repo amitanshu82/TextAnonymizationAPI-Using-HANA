@@ -1,5 +1,6 @@
 package io.poc.text.anym.dbservices;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -7,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.sql.DataSource;
+
 
 import io.poc.text.anym.app.entity.TextAnonym;
 import io.poc.text.anym.app.entity.TextInput;
@@ -153,9 +155,9 @@ public static int getindextables(int id)
      }
 	return queryResult;
 }
-// Method to get data from $TA Index table
-public static ArrayList<TextAnonym> getData( int id)
-{
+
+public static ArrayList<TextAnonym> getData( int id){
+	// TODO Method to get data from $TA Index table	
  Connection connection = null;
  ArrayList<TextAnonym> textanonym = new ArrayList<TextAnonym>();
 try
@@ -290,12 +292,71 @@ return maxID;
 }
 
 public static int writeDictionary(String textDict) {
-	// TODO Auto-generated method stub
+	// TODO Write value in HANA DB Dictionary 
+	Connection connection = null;
+	try
+	{
+	if (ds == null){
+	    ds = io.poc.text.anym.dbservices.HANADataSourceCreator.createHanaDataSource(hanaHost, hanaPort, hanaUser, hanaPassword, hanaSchema);
+	    if (ds != null)
+	        System.out.println("Data Source Created for CF DB connection.");
+	    
+	     else
+	        System.out.println("Data Source not Created for CF DB connection.");
+	  }
+	connection = ds.getConnection();
+	if(connection != null)
+	  System.out.println("Connection to DB successful...");
+	  else System.out.println("Connection to DB is not successful...");
+	CallableStatement cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE(?, ?, 'hdbtextdict', ?)}");
+	cStmt.executeUpdate();
+	cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CLEAR( )}");
+	cStmt.execute();
+	cStmt.close();
+	}
+	catch(Exception e) {
+	}finally {
+	     if (connection != null) {
+	         try {
+	         	connection.close();
+	         } catch (SQLException e) {}
+	     }
+	}
+	
 	return 1;
 }
 
 public static int writeTextRule(String textRule) {
-	// TODO Auto-generated method stub
+	// TODO Insert new rule in Rule Set of HANA DB 
+	Connection connection = null;
+	try
+	{
+	if (ds == null){
+	    ds = io.poc.text.anym.dbservices.HANADataSourceCreator.createHanaDataSource(hanaHost, hanaPort, hanaUser, hanaPassword, hanaSchema);
+	    if (ds != null)
+	        System.out.println("Data Source Created for CF DB connection.");
+	    
+	     else
+	        System.out.println("Data Source not Created for CF DB connection.");
+	  }
+	connection = ds.getConnection();
+	if(connection != null)
+	  System.out.println("Connection to DB successful...");
+	  else System.out.println("Connection to DB is not successful...");
+	CallableStatement cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE(?, ?, 'hdbtextrule', ?)}");
+	cStmt.executeUpdate();
+	cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CLEAR( )}");
+	cStmt.execute();
+	cStmt.close();
+	}
+	catch(Exception e) {
+	}finally {
+	     if (connection != null) {
+	         try {
+	         	connection.close();
+	         } catch (SQLException e) {}
+	     }
+	}
 	return 1;
 }
 }
