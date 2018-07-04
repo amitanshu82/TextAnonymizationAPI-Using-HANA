@@ -138,13 +138,13 @@ public String postDictionary(@PathVariable(value="textDict") String textDict ) t
 	return result;
   }
 
-@RequestMapping(value = "/posttextrule"+"/{textRule}", method = RequestMethod.POST)
+@RequestMapping(value = "/posttextrule"+"/{ruleLabel}"+"/{textRule}", method = RequestMethod.POST)
 
-public String postTextRule(@PathVariable(value="textRule") String textRule ) throws SQLException
+public String postTextRule(@PathVariable(value="ruleLabel") String ruleLabel,@PathVariable(value="textRule") String textRule, String ruleLable ) throws SQLException
   {
 	int sucess = 1;
 	String result;
-	String setRule = "<";
+	String setRule = "#group" + " " + ruleLable + ": " + "<";
 	int ruleStrLen = textRule.length();
 	int i = 0;
 	//char ruleaArray[]= textRule.toCharArray();
