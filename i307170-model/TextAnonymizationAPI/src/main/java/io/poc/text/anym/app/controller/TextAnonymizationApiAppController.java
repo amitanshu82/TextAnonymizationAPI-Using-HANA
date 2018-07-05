@@ -24,7 +24,7 @@ public class TextAnonymizationApiAppController {
 	  {
 		TextInput ti = new TextInput();
 		ti.setId(119);
-		ti.setText("Hi from TextAnonymization CF app");
+		ti.setText("Hi from TextAnonymization local app");
 		return ti;
 	  }
 	
@@ -35,20 +35,16 @@ public class TextAnonymizationApiAppController {
 		TextInput textin = new TextInput();
 		ArrayList<TextInput> textinput = new ArrayList<TextInput>();
 		ArrayList<TextAnonym> textanonym = new ArrayList<TextAnonym>();
-		//int strlen = text_input.length();
 		int insertID = 0;
 		int maxid = io.poc.text.anym.dbservices.HdbServices.getMaxId();
 		insertID = maxid + 1;
 	    text_input = text_input.replace("'" , "");
 	    text_input = text_input.replace("‘" , "");
-	//	text_input = text_input.replaceAll("[^a-zA-Z0-9]", "");
-		//if(strlen <= 5000)
-		//{
-			textin.setId(insertID);
-		 	textin.setText(text_input);
-		 	textinput.add(textin);	 	
-		//}
+		textin.setId(insertID);
+		textin.setText(text_input);
+		textinput.add(textin);	
 		
+// Get the last id from Input table	
 		int rows = io.poc.text.anym.dbservices.HdbServices.insertData(textinput);
 		System.out.println("No or rows insertde " + rows );
 
@@ -140,25 +136,25 @@ public String postDictionary(@PathVariable(value="textDict") String textDict ) t
 
 @RequestMapping(value = "/posttextrule"+"/{ruleLabel}"+"/{textRule}", method = RequestMethod.POST)
 
-public String postTextRule(@PathVariable(value="ruleLabel") String ruleLabel,@PathVariable(value="textRule") String textRule, String ruleLable ) throws SQLException
+public String postTextRule(@PathVariable(value="ruleLabel") String ruleLabel,@PathVariable(value="textRule") String textRule ) throws SQLException
   {
 	int sucess = 1;
 	String result;
-	String setRule = "#group" + " " + ruleLable + ": " + "<";
+	String setRule = "#group "+ ruleLabel + ": <";
 	int ruleStrLen = textRule.length();
 	int i = 0;
 	//char ruleaArray[]= textRule.toCharArray();
-    for( ; i <= ruleStrLen; i++)
+    for( ; i < ruleStrLen; i++)
     {
     if ((Character.isDigit(textRule.charAt(i)) == true)) {
-    	setRule = setRule + "[A-Z]|[a-z]";
-    } else if ((Character.isAlphabetic(textRule.charAt(i)) == true)) {
     	setRule = setRule + "[0-9]";
+    } else if ((Character.isAlphabetic(textRule.charAt(i)) == true)) {
+    	setRule = setRule + "[A-Z]|[a-z]";
     } else {
     	setRule = setRule + textRule.charAt(i) ;
     }
     };
-    setRule = setRule + "{" +"ruleStrLen" + "," + "ruleStrLen"+ "}"+ ">";
+    setRule = setRule + "{" + ruleStrLen + "," + ruleStrLen + "}"+ ">";
 	sucess = io.poc.text.anym.dbservices.HdbServices.writeTextRule(setRule);
 	if(sucess == 0)
 		result =  "Text Rule Changes are Sucessfull";

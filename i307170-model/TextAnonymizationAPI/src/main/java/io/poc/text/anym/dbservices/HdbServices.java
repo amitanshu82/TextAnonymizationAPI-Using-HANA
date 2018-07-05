@@ -343,7 +343,9 @@ public static int writeTextRule(String textRule) {
 	if(connection != null)
 	  System.out.println("Connection to DB successful...");
 	  else System.out.println("Connection to DB is not successful...");
-	CallableStatement cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::Word_Rules', 'hdbtextrule', ?)}");
+	textRule = "'" + textRule + "'";
+	CallableStatement cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::Word_Rules', 'hdbtextrule', "+textRule+")}");
+	//cStmt.setString(4, textRule);
 	cStmt.executeUpdate();
 	cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CLEAR( )}");
 	cStmt.execute();
