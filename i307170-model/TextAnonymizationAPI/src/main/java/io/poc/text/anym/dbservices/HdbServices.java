@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import javax.sql.DataSource;
 
-
 import io.poc.text.anym.app.entity.TextAnonym;
 import io.poc.text.anym.app.entity.TextInput;
 
@@ -160,6 +159,14 @@ public static ArrayList<TextAnonym> getData( int id){
 	// TODO Method to get data from $TA Index table	
  Connection connection = null;
  ArrayList<TextAnonym> textanonym = new ArrayList<TextAnonym>();
+ String whereClause = "";
+try {
+		whereClause = io.poc.text.anym.app.component.TextAnonymizationApiComponent.getClause( );
+	}catch (Exception e) {
+		System.out.println("Printing stack trace : ");
+		e.printStackTrace();
+	};
+
 try
 {
        
@@ -176,7 +183,8 @@ try
          System.out.println("Connection to DB successful...");
        else System.out.println("Connection to DB is not successful...");		 
        Statement stmt = connection.createStatement();
-	   String sqlquery = "SELECT * FROM \"DLP\".\"$TA_TestHana.HDBModule::EXT_Core.hdbfulltextindex\" where ID = " + id +"  AND TA_TYPE IN ( 'PERSON', 'COUNTRY', 'EMPLOYEE_ID','URI/EMAIL', 'URI/URL', 'ORGANIZATION/COMMERCIAL', 'CURRENCY',  'EMPLOYEE_ID' , 'CREDIT_CARD/AMERICAN_EXPRESS' , 'CREDIT_CARD/MASTER_CARD' , 'CREDIT_CARD/VISA_CARD' , 'PanCard_INFO' , 'YEAR' , 'DATE' )  ";
+	   String sqlquery = "SELECT * FROM \"DLP\".\"$TA_TestHana.HDBModule::EXT_Core.hdbfulltextindex\" where ID = " + id +"  AND TA_TYPE IN"; //( 'PERSON', 'COUNTRY', 'EMPLOYEE_ID','URI/EMAIL', 'URI/URL', 'ORGANIZATION/COMMERCIAL', 'CURRENCY',  'EMPLOYEE_ID' , 'CREDIT_CARD/AMERICAN_EXPRESS' , 'CREDIT_CARD/MASTER_CARD' , 'CREDIT_CARD/VISA_CARD' , 'PanCard_INFO' , 'YEAR' , 'DATE' )  ";
+	   sqlquery = sqlquery + whereClause;
 	   System.out.println("Query that is fired "+sqlquery);
 	   ResultSet resultSetIndex = stmt.executeQuery(sqlquery);
 	   if (resultSetIndex != null){
