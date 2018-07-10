@@ -159,14 +159,7 @@ public static ArrayList<TextAnonym> getData( int id){
 	// TODO Method to get data from $TA Index table	
  Connection connection = null;
  ArrayList<TextAnonym> textanonym = new ArrayList<TextAnonym>();
- String whereClause = "";
-try {
-		whereClause = io.poc.text.anym.app.component.TextAnonymizationApiComponent.getClause( );
-	}catch (Exception e) {
-		System.out.println("Printing stack trace : ");
-		e.printStackTrace();
-	};
-
+ 
 try
 {
        
@@ -184,7 +177,6 @@ try
        else System.out.println("Connection to DB is not successful...");		 
        Statement stmt = connection.createStatement();
 	   String sqlquery = "SELECT * FROM \"DLP\".\"$TA_TestHana.HDBModule::EXT_Core.hdbfulltextindex\" where ID = " + id +"  AND TA_TYPE IN ( 'PERSON', 'COUNTRY', 'EMPLOYEE_ID','URI/EMAIL', 'URI/URL', 'ORGANIZATION/COMMERCIAL', 'CURRENCY',  'EMPLOYEE_ID' , 'CREDIT_CARD/AMERICAN_EXPRESS' , 'CREDIT_CARD/MASTER_CARD' , 'CREDIT_CARD/VISA_CARD' , 'PanCard_INFO' , 'YEAR' , 'DATE' )  ";
-	   //sqlquery = sqlquery + whereClause;
 	   System.out.println("Query that is fired "+sqlquery);
 	   ResultSet resultSetIndex = stmt.executeQuery(sqlquery);
 	   if (resultSetIndex != null){
@@ -301,6 +293,7 @@ return maxID;
 
 public static int writeDictionary(String textDict) {
 	// TODO Write value in HANA DB Dictionary 
+	int result = 0;
 	Connection connection = null;
 	try
 	{
@@ -319,7 +312,7 @@ public static int writeDictionary(String textDict) {
 	CallableStatement cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE(?, ?, 'hdbtextdict', ?)}");
 	cStmt.executeUpdate();
 	cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CLEAR( )}");
-	cStmt.execute();
+	result = cStmt.executeUpdate();
 	cStmt.close();
 	}
 	catch(Exception e) {
@@ -331,7 +324,8 @@ public static int writeDictionary(String textDict) {
 	     }
 	}
 	
-	return 1;
+	
+	return result;
 }
 
 public static int writeTextRule(String textRule) {
