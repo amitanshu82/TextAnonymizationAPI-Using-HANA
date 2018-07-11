@@ -136,25 +136,11 @@ public String postDictionary(@PathVariable(value="textDict") String textDict ) t
 
 @RequestMapping(value = "/posttextrule"+"/{ruleLabel}"+"/{textRule}", method = RequestMethod.POST)
 
-public String postTextRule(@PathVariable(value="ruleLabel") String ruleLabel,@PathVariable(value="textRule") String textRule ) throws SQLException
+public String postTextRule(@PathVariable(value="textLabel") String textLabel,@PathVariable(value="textRule") String textRule ) throws SQLException
   {
 	int sucess = 1;
 	String result;
-	String setRule = "#group "+ ruleLabel + ": <";
-	int ruleStrLen = textRule.length();
-	int i = 0;
-	//char ruleaArray[]= textRule.toCharArray();
-    for( ; i < ruleStrLen; i++)
-    {
-    if ((Character.isDigit(textRule.charAt(i)) == true)) {
-    	setRule = setRule + "[0-9]";
-    } else if ((Character.isAlphabetic(textRule.charAt(i)) == true)) {
-    	setRule = setRule + "[A-Z]|[a-z]";
-    } else {
-    	setRule = setRule + textRule.charAt(i) ;
-    }
-    };
-    setRule = setRule + "{" + ruleStrLen + "," + ruleStrLen + "}"+ ">";
+	String setRule = io.poc.text.anym.app.services.AppServices.convertTextToRule(textRule,textLabel);
 	sucess = io.poc.text.anym.dbservices.HdbServices.writeTextRule(setRule);
 	if(sucess == 0)
 		result =  "Text Rule Changes are Sucessfull";
