@@ -134,13 +134,13 @@ public String postDictionary(@PathVariable(value="textDict") String textDict ) t
 	return result;
   }
 
-@RequestMapping(value = "/posttextrule"+"/{ruleLabel}"+"/{textRule}", method = RequestMethod.POST)
+@RequestMapping(value = "/posttextrule"+"/{textLabel}"+"/{textRule}", method = RequestMethod.POST)
 
 public String postTextRule(@PathVariable(value="textLabel") String textLabel,@PathVariable(value="textRule") String textRule ) throws SQLException
   {
 	int sucess = 1;
 	String result;
-	String setRule = io.poc.text.anym.app.services.AppServices.convertTextToRule(textRule,textLabel);
+	String setRule = io.poc.text.anym.app.services.AppServices.convertTextToRule(textLabel,textRule);
 	sucess = io.poc.text.anym.dbservices.HdbServices.writeTextRule(setRule);
 	if(sucess == 0)
 		result =  "Text Rule Changes are Sucessfull";

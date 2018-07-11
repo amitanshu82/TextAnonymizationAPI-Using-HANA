@@ -1,8 +1,8 @@
 package io.poc.text.anym.app.services;
 
 public class AppServices {
-	public static String convertTextToRule(String textRule, String ruleLabel){
-		 String setRule = "#group "+ ruleLabel + ": <";
+	public static String convertTextToRule(String textLabel, String textRule){
+		 String setRule = "#group "+ textLabel + ": <";
 		 int ruleStrLen = textRule.length();
 			int i = 0;
 		 int digit_counter = 0 , char_counter = 0;	
