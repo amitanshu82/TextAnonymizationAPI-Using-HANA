@@ -331,6 +331,7 @@ public static int writeDictionary(String textDict) {
 public static int writeTextRule(String textRule) {
 	// TODO Insert new rule in Rule Set of HANA DB 
 	Connection connection = null;
+	int sucess = 0;
 	try
 	{
 	if (ds == null){
@@ -348,7 +349,7 @@ public static int writeTextRule(String textRule) {
 	textRule = "'" + textRule + "'";
 	CallableStatement cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::Word_Rules', 'hdbtextrule', "+textRule+")}");
 	//cStmt.setString(4, textRule);
-	cStmt.executeUpdate();
+	sucess = cStmt.executeUpdate();
 	cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CLEAR( )}");
 	cStmt.execute();
 	cStmt.close();
@@ -361,7 +362,7 @@ public static int writeTextRule(String textRule) {
 	         } catch (SQLException e) {}
 	     }
 	}
-	return 1;
+	return sucess;
 }
 }
 

@@ -138,11 +138,11 @@ public String postDictionary(@PathVariable(value="textDict") String textDict ) t
 
 public String postTextRule(@PathVariable(value="textLabel") String textLabel,@PathVariable(value="textRule") String textRule ) throws SQLException
   {
-	int sucess = 1;
+	int sucess = 0;
 	String result;
 	String setRule = io.poc.text.anym.app.services.AppServices.convertTextToRule(textLabel,textRule);
 	sucess = io.poc.text.anym.dbservices.HdbServices.writeTextRule(setRule);
-	if(sucess == 0)
+	if(sucess != 0)
 		result =  "Text Rule Changes are Sucessfull";
 	else
 	    result =  "Text Rule Changes are not Sucessfull";
