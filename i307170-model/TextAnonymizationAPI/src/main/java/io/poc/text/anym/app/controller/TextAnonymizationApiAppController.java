@@ -36,7 +36,7 @@ public class TextAnonymizationApiAppController {
 		ArrayList<TextInput> textinput = new ArrayList<TextInput>();
 		ArrayList<TextAnonym> textanonym = new ArrayList<TextAnonym>();
 		int insertID = 0;
-		int maxid = io.poc.text.anym.dbservices.HdbServices.getMaxId();
+		int maxid = io.poc.text.anym.dbservices.HdbServices.getMaxId("inputTable");
 		insertID = maxid + 1;
 	    text_input = text_input.replace("'" , "");
 	    text_input = text_input.replace("‘" , "");
@@ -138,11 +138,11 @@ public String postDictionary(@PathVariable(value="textDict") String textDict ) t
 
 public String postTextRule(@PathVariable(value="textLabel") String textLabel,@PathVariable(value="textRule") String textRule ) throws SQLException
   {
-	int sucess = 0;
+	int sucess = 1;
 	String result;
 	String setRule = io.poc.text.anym.app.services.AppServices.convertTextToRule(textLabel,textRule);
-	sucess = io.poc.text.anym.dbservices.HdbServices.writeTextRule(setRule);
-	if(sucess != 0)
+	sucess = io.poc.text.anym.dbservices.HdbServices.writeTextRule(setRule,textLabel);
+	if(sucess == 0)
 		result =  "Text Rule Changes are Sucessfull";
 	else
 	    result =  "Text Rule Changes are not Sucessfull";

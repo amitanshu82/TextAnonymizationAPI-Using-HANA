@@ -159,6 +159,7 @@ public static ArrayList<TextAnonym> getData( int id){
 	// TODO Method to get data from $TA Index table	
  Connection connection = null;
  ArrayList<TextAnonym> textanonym = new ArrayList<TextAnonym>();
+ String queryLabel = null;
  
 try
 {
@@ -176,7 +177,16 @@ try
          System.out.println("Connection to DB successful...");
        else System.out.println("Connection to DB is not successful...");		 
        Statement stmt = connection.createStatement();
-	   String sqlquery = "SELECT * FROM \"DLP\".\"$TA_TestHana.HDBModule::EXT_Core.hdbfulltextindex\" where ID = " + id +"  AND TA_TYPE IN ( 'PERSON', 'COUNTRY', 'EMPLOYEE_ID','URI/EMAIL', 'URI/URL', 'ORGANIZATION/COMMERCIAL', 'CURRENCY',  'EMPLOYEE_ID' , 'CREDIT_CARD/AMERICAN_EXPRESS' , 'CREDIT_CARD/MASTER_CARD' , 'CREDIT_CARD/VISA_CARD' , 'PanCard_INFO' , 'YEAR' , 'DATE' , 'PAN_CARD' )  ";
+       String getQueryLabel = "SELECT * FROM \"DLP\".\"TestHana.HDBModule::queryTable\"";
+       ResultSet resultSetQuery = stmt.executeQuery(getQueryLabel);
+       if (resultSetQuery != null){
+    	   while(resultSetQuery.next()){
+    		 String label =  resultSetQuery.getNString("LABEL"); 
+    		 queryLabel = "," + "'" + label + "'";
+    	   }
+    	   resultSetQuery.close();
+       }
+	   String sqlquery = "SELECT * FROM \"DLP\".\"$TA_TestHana.HDBModule::EXT_Core.hdbfulltextindex\" where ID = " + id +"  AND TA_TYPE IN ( 'PERSON', 'COUNTRY', 'EMPLOYEE_ID','URI/EMAIL', 'URI/URL', 'ORGANIZATION/COMMERCIAL', 'CURRENCY',  'EMPLOYEE_ID' , 'CREDIT_CARD/AMERICAN_EXPRESS' , 'CREDIT_CARD/MASTER_CARD' , 'CREDIT_CARD/VISA_CARD' , 'PanCard_INFO' , 'YEAR' , 'DATE' , 'PAN_CARD' "+queryLabel+" )  ";
 	   System.out.println("Query that is fired "+sqlquery);
 	   ResultSet resultSetIndex = stmt.executeQuery(sqlquery);
 	   if (resultSetIndex != null){
@@ -252,7 +262,7 @@ try
 return rows ;
 }
 
-public static int getMaxId() {
+public static int getMaxId(String tableName) {
 Connection connection = null;
 try
 {
@@ -270,7 +280,7 @@ if(connection != null)
   System.out.println("Connection to DB successful...");
   else System.out.println("Connection to DB is not successful...");
  Statement stmt = connection.createStatement();
- sqlquery = "SELECT MAX(ID) FROM \"DLP\".\"TestHana.HDBModule::inputTable\" " ;
+ sqlquery = "SELECT MAX(ID) FROM \"DLP\".\"TestHana.HDBModule::"+tableName+"\" " ;
    System.out.println("Query that is fired "+sqlquery);
    ResultSet rs=stmt.executeQuery(sqlquery);          
    //Extract result from ResultSet rs
@@ -328,10 +338,10 @@ public static int writeDictionary(String textDict) {
 	return result;
 }
 
-public static int writeTextRule(String textRule) {
+public static int writeTextRule(String textRule,String textLabel) {
 	// TODO Insert new rule in Rule Set of HANA DB 
 	Connection connection = null;
-	int sucess = 0;
+	int sucess = 1;
 	try
 	{
 	if (ds == null){
@@ -349,9 +359,20 @@ public static int writeTextRule(String textRule) {
 	CallableStatement cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::Word_Rules', 'hdbtextrule', "+textRule+")}");
 	//cStmt.setString(4, textRule);
 	sucess = cStmt.executeUpdate();
-	cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CLEAR( )}");
+	cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CLEAR('DLP', 'TestHana.HDBModule::Word_Rules','hdbtextrule'); }");
 	cStmt.execute();
 	cStmt.close();
+	if (sucess == 0){
+		 int maxid = io.poc.text.anym.dbservices.HdbServices.getMaxId("queryTable");
+		 int inputID = maxid+1;
+		 Statement stmt = connection.createStatement();
+	     String setQueryLabel = "insert into \"TestHana.HDBModule::queryTable\" values (" + inputID +","+ "'"+textLabel+"'" +");" ;
+	     System.out.println("Query that is fired "+setQueryLabel);
+		   int rows = stmt.executeUpdate(setQueryLabel);
+		   if(rows != 0) {
+			   connection.commit();  
+		   }
+	}
 	}
 	catch(Exception e) {
 	}finally {
