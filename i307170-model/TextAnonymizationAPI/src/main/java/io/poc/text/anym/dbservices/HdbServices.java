@@ -25,7 +25,6 @@ static int queryResult = 0;
 static DataSource ds = null;
 static int maxID = 0;
 
-
 public static int getinputtables()
 {
 	Connection connection = null;
@@ -359,9 +358,11 @@ public static int writeTextRule(String textRule,String textLabel) {
 	CallableStatement cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::Word_Rules', 'hdbtextrule', "+textRule+")}");
 	//cStmt.setString(4, textRule);
 	sucess = cStmt.executeUpdate();
-	cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CLEAR('DLP', 'TestHana.HDBModule::Word_Rules','hdbtextrule'); }");
+	try {  
+	cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CLEAR('DLP', 'TestHana.HDBModule::Word_Rules','hdbtextrule') }");
 	cStmt.execute();
-	cStmt.close();
+	cStmt.close();}catch(Exception e) {
+	} 
 	if (sucess == 0){
 		 int maxid = io.poc.text.anym.dbservices.HdbServices.getMaxId("queryTable");
 		 int inputID = maxid+1;
@@ -378,14 +379,10 @@ public static int writeTextRule(String textRule,String textLabel) {
 	}finally {
 	     if (connection != null) {
 	         try {
-	         	connection.close();
+	        	 connection.close();
 	         } catch (SQLException e) {}
 	     }
 	}
 	return sucess;
 }
 }
-
-
-
-
