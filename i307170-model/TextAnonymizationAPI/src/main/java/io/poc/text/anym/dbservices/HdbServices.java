@@ -181,7 +181,9 @@ try
        if (resultSetQuery != null){
     	   while(resultSetQuery.next()){
     		 String label =  resultSetQuery.getNString("LABEL"); 
+    		 if (label == null) {
     		 queryLabel = "," + "'" + label + "'";
+    		 }
     	   }
     	   resultSetQuery.close();
        }
@@ -474,6 +476,10 @@ try
 }
 
 }
+
+
+
+
 
 
 
