@@ -389,10 +389,6 @@ public static int writeTextRule(String textRule,String textLabel) {
 			newRuleSet = newRuleSet +"\n"+ arrayRuleSet[i] ;
     }
 	newRuleSet = includeData + "\n"+textRule;
-//	newRuleSet = "'"+newRuleSet+"'";
-//	String text = "#group EMAID: <(i|I|c|C)[0-9]{6,6}>";
-//	text = text +"\n"+"#group PAN_NUM: <[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}>";
-//	text = text+"\n"+"#group PAN_NO: <[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}>";
 	CallableStatement cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::add_rule', 'hdbtextinclude', '"+newRuleSet+"')}");//"+textRule+"
 	cStmt.executeUpdate();
 	cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::Word_Rules', 'hdbtextrule', '"+includeRule+"')}");
@@ -476,10 +472,6 @@ try
 }
 
 }
-
-
-
-
 
 
 
