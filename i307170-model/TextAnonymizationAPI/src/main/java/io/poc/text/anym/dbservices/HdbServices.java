@@ -25,6 +25,9 @@ static int queryResult = 0;
 static DataSource ds = null;
 static int maxID = 0;
 
+
+
+
 public static int getinputtables()
 {
 	Connection connection = null;
@@ -181,7 +184,7 @@ try
        if (resultSetQuery != null){
     	   while(resultSetQuery.next()){
     		 String label =  resultSetQuery.getNString("LABEL"); 
-    		 if (label == null) {
+    		 if (label != null) {
     		 queryLabel = "," + "'" + label + "'";
     		 }
     	   }
@@ -339,12 +342,12 @@ public static int writeDictionary(String textDict) {
 	return result;
 }
 
+@SuppressWarnings("resource")
 public static int writeTextRule(String textRule,String textLabel) {
 	// TODO Insert new rule in Rule Set of HANA DB 
 	Connection connection = null;
-	int success = 1;
-	String includeData = null;
-	String newRuleSet = null;
+	int success = 1, ruleExist = 0;
+	String includeData = null , oldRuleSet = null, newRuleSet = null;
 	String includeRule = "#include \"TestHana.HDBModule::add_rule.hdbtextinclude\"";
 	try
 	{
@@ -384,11 +387,18 @@ public static int writeTextRule(String textRule,String textLabel) {
 	for (int i=0; i < arrayRuleSet.length; i++)
     {
 		if ( i == 0) 
-		newRuleSet = arrayRuleSet[i] ;
+		oldRuleSet = arrayRuleSet[i] ;
 		else
-			newRuleSet = newRuleSet +"\n"+ arrayRuleSet[i] ;
+			oldRuleSet = oldRuleSet +"\n"+ arrayRuleSet[i] ;
+		if (arrayRuleSet[i].equals(textRule))
+		{
+			ruleExist = 1;
+		}
     }
-	newRuleSet = includeData + "\n"+textRule;
+	if (ruleExist == 0)
+	{
+
+	newRuleSet = oldRuleSet + "\n"+textRule;
 	CallableStatement cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::add_rule', 'hdbtextinclude', '"+newRuleSet+"')}");//"+textRule+"
 	cStmt.executeUpdate();
 	cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::Word_Rules', 'hdbtextrule', '"+includeRule+"')}");
@@ -413,7 +423,13 @@ public static int writeTextRule(String textRule,String textLabel) {
 		   if(rows != 0) {
 			   connection.commit();  
 		   }
-	}
+	 }else {
+		 cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::add_rule', 'hdbtextinclude', '"+oldRuleSet+"')}");//"+textRule+"
+		 cStmt.executeUpdate(); 
+	 }
+	
+	} else success = 2;  
+	
 	}
 	catch(Exception e) {
 	}finally {
@@ -472,7 +488,5 @@ try
 }
 
 }
-
-
 
 

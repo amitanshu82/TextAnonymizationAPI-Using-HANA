@@ -151,8 +151,10 @@ public String postTextRule(@PathVariable(value="textLabel") String textLabel,@Pa
 	    result =  "Text Rule Changes are not Sucessfull";
 		
 		
-  }else {
-	  result = "Rule Label validation failed. Rule Label already exists";
+  }else if(sucess == 2) {
+	  result = "Rule validation failed. Rule already exists";
+  }else{
+	  result = "Rule Label validation failed. Rule Label already exists"; 
   }
 	return result;
   }
