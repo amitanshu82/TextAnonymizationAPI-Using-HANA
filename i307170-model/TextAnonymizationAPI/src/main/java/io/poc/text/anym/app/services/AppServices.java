@@ -1,5 +1,7 @@
 package io.poc.text.anym.app.services;
 
+import java.util.ArrayList;
+
 public class AppServices {
 	public static String convertTextToRule(String textLabel, String textRule){
 		 String setRule = "#group "+ textLabel + ": <";
@@ -75,7 +77,24 @@ public class AppServices {
 		    setRule = setRule + "{" + digit_counter + "}"+ ">";
 		 else
 			 setRule = setRule + "{" + char_counter + "}"+ ">"; 
-		 setRule = "'"+setRule+"'";
+//		 setRule = "'"+setRule+"'";
 		 return setRule;
 		 }
+	
+	public static int validateLabel(String textLabel)
+	{
+		int valid = 0;
+		ArrayList<String> Labels = io.poc.text.anym.dbservices.HdbServices.getLabels();
+		for (int counter = 0; counter < Labels.size(); counter++) { 		      
+	          String label = Labels.get(counter); 
+	          if (label.equals(textLabel))
+	          {
+	        	  valid = 1;
+	          }
+	        	  
+	           
+	      } 
+		return valid;
+		
+	}
 }

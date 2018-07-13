@@ -185,7 +185,7 @@ try
     	   }
     	   resultSetQuery.close();
        }
-	   String sqlquery = "SELECT * FROM \"DLP\".\"$TA_TestHana.HDBModule::EXT_Core.hdbfulltextindex\" where ID = " + id +"  AND TA_TYPE IN ( 'PERSON', 'COUNTRY', 'EMPLOYEE_ID','URI/EMAIL', 'URI/URL', 'ORGANIZATION/COMMERCIAL', 'CURRENCY',  'EMPLOYEE_ID' , 'CREDIT_CARD/AMERICAN_EXPRESS' , 'CREDIT_CARD/MASTER_CARD' , 'CREDIT_CARD/VISA_CARD' , 'PanCard_INFO' , 'YEAR' , 'DATE' , 'PAN_CARD' "+queryLabel+" )  ";
+	   String sqlquery = "SELECT * FROM \"DLP\".\"$TA_TestHana.HDBModule::EXT_Core.hdbfulltextindex\" where ID = " + id +"  AND TA_TYPE IN ( 'PERSON', 'COUNTRY', 'EMPLOYEE_ID','URI/EMAIL', 'URI/URL', 'ORGANIZATION/COMMERCIAL', 'CURRENCY',  'EMPLOYEE_ID' , 'CREDIT_CARD/AMERICAN_EXPRESS' , 'CREDIT_CARD/MASTER_CARD' , 'CREDIT_CARD/VISA_CARD' , 'PAN_NO' , 'YEAR' , 'DATE'  "+queryLabel+" )  ";
 	   System.out.println("Query that is fired "+sqlquery);
 	   ResultSet resultSetIndex = stmt.executeQuery(sqlquery);
 	   if (resultSetIndex != null){
@@ -340,7 +340,10 @@ public static int writeDictionary(String textDict) {
 public static int writeTextRule(String textRule,String textLabel) {
 	// TODO Insert new rule in Rule Set of HANA DB 
 	Connection connection = null;
-	int sucess = 1;
+	int success = 1;
+	String includeData = null;
+	String newRuleSet = null;
+	String includeRule = "#include \"TestHana.HDBModule::add_rule.hdbtextinclude\"";
 	try
 	{
 	if (ds == null){
@@ -355,15 +358,54 @@ public static int writeTextRule(String textRule,String textLabel) {
 	if(connection != null)
 	  System.out.println("Connection to DB successful...");
 	  else System.out.println("Connection to DB is not successful...");
-	CallableStatement cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::Word_Rules', 'hdbtextrule', "+textRule+")}");
-	//cStmt.setString(4, textRule);
-	sucess = cStmt.executeUpdate();
-	try {  
-	cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CLEAR('DLP', 'TestHana.HDBModule::Word_Rules','hdbtextrule') }");
-	cStmt.execute();
-	cStmt.close();}catch(Exception e) {
-	} 
-	if (sucess == 0){
+	//CallableStatement cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::Word_Rules', 'hdbtextrule', "+textRule+")}");
+	//success = cStmt.executeUpdate();
+	// Get Data from SYS table for all the value in include file
+	try {
+		Statement stmt = connection.createStatement();
+	    String setQueryInclude = "select * from \"SYS\".\"TEXT_CONFIGURATIONS_\"; " ;
+	    ResultSet rsInclude=stmt.executeQuery(setQueryInclude);          
+	    //Extract result from ResultSet rsInclude
+	    while(rsInclude.next()){
+//	        String name = rsInclude.getString("name");// == "TestHana.HDBModule::add_rules"); 
+	        if (rsInclude.getString("name").equals("TestHana.HDBModule::add_rule"))
+	        {	
+	        includeData = rsInclude.getString("DATA");
+	        }
+	      }
+	    rsInclude.close();
+	    stmt.close();
+	}catch(Exception e) {
+	}
+	//Preparing for procedure call for update of include and Rule set
+	String[] arrayRuleSet = includeData.split("\n"); 
+	for (int i=0; i < arrayRuleSet.length; i++)
+    {
+		if ( i == 0) 
+		newRuleSet = arrayRuleSet[i] ;
+		else
+			newRuleSet = newRuleSet +"\n"+ arrayRuleSet[i] ;
+    }
+	newRuleSet = includeData + "\n"+textRule;
+//	newRuleSet = "'"+newRuleSet+"'";
+//	String text = "#group EMAID: <(i|I|c|C)[0-9]{6,6}>";
+//	text = text +"\n"+"#group PAN_NUM: <[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}>";
+//	text = text+"\n"+"#group PAN_NO: <[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}>";
+	CallableStatement cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::add_rule', 'hdbtextinclude', '"+newRuleSet+"')}");//"+textRule+"
+	cStmt.executeUpdate();
+	cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::Word_Rules', 'hdbtextrule', '"+includeRule+"')}");
+	success = cStmt.executeUpdate();
+	if (success == 0){
+		try {
+			cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CLEAR('DLP', 'TestHana.HDBModule::add_Rule','hdbtexinclude' ) }");
+			cStmt.execute();	
+			}catch(Exception e) {
+			} 
+		try {	
+			cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CLEAR('DLP', 'TestHana.HDBModule::Word_Rules','hdbtextrule' ) }");
+			cStmt.execute();
+			cStmt.close();}catch(Exception e) {
+			} 
 		 int maxid = io.poc.text.anym.dbservices.HdbServices.getMaxId("queryTable");
 		 int inputID = maxid+1;
 		 Statement stmt = connection.createStatement();
@@ -378,11 +420,61 @@ public static int writeTextRule(String textRule,String textLabel) {
 	catch(Exception e) {
 	}finally {
 	     if (connection != null) {
-	         try {
+	         try {	        	
 	        	 connection.close();
 	         } catch (SQLException e) {}
 	     }
 	}
-	return sucess;
+	return success;
 }
+
+//Get Labels from queryTable
+
+public static ArrayList<String> getLabels(){
+	// TODO Method to get data from $TA Index table	
+ Connection connection = null;
+ ArrayList<String> Label = new ArrayList<String>();
+ 
+try
+{
+       
+       if (ds == null){
+          ds = io.poc.text.anym.dbservices.HANADataSourceCreator.createHanaDataSource(hanaHost, hanaPort, hanaUser, hanaPassword, hanaSchema);
+          if (ds != null)
+          System.out.println("Data Source Created for CF DB connection.");
+          
+          else
+          System.out.println("Data Source not Created for CF DB connection.");
+        }
+       connection = ds.getConnection();
+       if(connection != null)
+         System.out.println("Connection to DB successful...");
+       else System.out.println("Connection to DB is not successful...");		 
+       Statement stmt = connection.createStatement();
+       String getQueryLabel = "SELECT * FROM \"DLP\".\"TestHana.HDBModule::queryTable\"";
+       ResultSet resultSetQuery = stmt.executeQuery(getQueryLabel);
+       if (resultSetQuery != null){
+    	   while(resultSetQuery.next()){
+    		 String label =  resultSetQuery.getNString("LABEL"); 
+    		 Label.add(label);
+    	   }
+    	   resultSetQuery.close();
+       }
+	  
 }
+	catch(Exception e) {
+	 }finally {
+		    if (connection != null) {
+		        try {
+		        	connection.close();
+		        } catch (SQLException e) {}
+		    }
+		}
+	return  Label;
+}
+
+}
+
+
+
+

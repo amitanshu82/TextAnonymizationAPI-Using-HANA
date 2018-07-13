@@ -138,8 +138,11 @@ public String postDictionary(@PathVariable(value="textDict") String textDict ) t
 
 public String postTextRule(@PathVariable(value="textLabel") String textLabel,@PathVariable(value="textRule") String textRule ) throws SQLException
   {
-	int sucess = 1;
-	String result;
+	int sucess = 1, validLabel = 0;
+	String result = null;
+	validLabel = io.poc.text.anym.app.services.AppServices.validateLabel(textLabel);
+	if (validLabel == 0)
+	{
 	String setRule = io.poc.text.anym.app.services.AppServices.convertTextToRule(textLabel,textRule);
 	sucess = io.poc.text.anym.dbservices.HdbServices.writeTextRule(setRule,textLabel);
 	if(sucess == 0)
@@ -147,7 +150,11 @@ public String postTextRule(@PathVariable(value="textLabel") String textLabel,@Pa
 	else
 	    result =  "Text Rule Changes are not Sucessfull";
 		
-		return result;
+		
+  }else {
+	  result = "Rule Label validation failed. Rule Label already exists";
+  }
+	return result;
   }
 
 }
