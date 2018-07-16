@@ -196,6 +196,7 @@ try
 	   if (resultSetIndex != null){
 			while(resultSetIndex.next()){
 			    TextAnonym txtanym = new TextAnonym();
+			    txtanym.setId(resultSetIndex.getInt("ID")); 
 			    txtanym.setTa_token(resultSetIndex.getNString("TA_TOKEN"));
 			    txtanym.setTa_type(resultSetIndex.getString("TA_TYPE"));
 			    textanonym.add(txtanym);

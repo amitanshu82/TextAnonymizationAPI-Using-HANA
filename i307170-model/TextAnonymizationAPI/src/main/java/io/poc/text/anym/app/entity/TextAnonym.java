@@ -5,8 +5,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+
 @Entity
-@Table(schema = "SHEKAHAR", name = "$T_TEXT_ANONYM")
+@Table(schema = "DLP", name = "$T_TEXT_ANONYM")
 public class TextAnonym {
 
 	@Id
