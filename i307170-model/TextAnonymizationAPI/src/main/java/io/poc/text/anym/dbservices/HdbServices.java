@@ -42,7 +42,7 @@ public static int getinputtables()
         	   System.out.println("Data Source not Created for CF DB connection.");
        }
        
-       connection = ds.getConnection();        connection = ds.getConnection();
+       connection = ds.getConnection();
         if(connection != null)
             System.out.println("Connection to DB successful...");
             else System.out.println("Connection to DB is not successful...");
@@ -161,8 +161,8 @@ public static ArrayList<TextAnonym> getData( int id){
 	// TODO Method to get data from $TA Index table	
  Connection connection = null;
  ArrayList<TextAnonym> textanonym = new ArrayList<TextAnonym>();
- String queryLabel = null;
- 
+ String queryLabel = null ;
+
 try
 {
        
@@ -185,11 +185,12 @@ try
     	   while(resultSetQuery.next()){
     		 String label =  resultSetQuery.getNString("LABEL"); 
     		 if (label != null) {
-    		 queryLabel = "," + "'" + label + "'";
+    		 queryLabel = queryLabel + "," + "'" + label + "'";
     		 }
     	   }
     	   resultSetQuery.close();
        }
+       queryLabel = queryLabel.replaceAll("null", "");
 	   String sqlquery = "SELECT * FROM \"DLP\".\"$TA_TestHana.HDBModule::EXT_Core.hdbfulltextindex\" where ID = " + id +"  AND TA_TYPE IN ( 'PERSON', 'COUNTRY', 'EMPLOYEEID','URI/EMAIL', 'URI/URL', 'ORGANIZATION/COMMERCIAL', 'CURRENCY',  'EMPLOYEE_ID' , 'CREDIT_CARD/AMERICAN_EXPRESS' , 'CREDIT_CARD/MASTER_CARD' , 'CREDIT_CARD/VISA_CARD' , 'PAN_NO' , 'YEAR' , 'DATE'  "+queryLabel+" )  ";
 	   System.out.println("Query that is fired "+sqlquery);
 	   ResultSet resultSetIndex = stmt.executeQuery(sqlquery);
@@ -401,19 +402,22 @@ public static int writeTextRule(String textRule,String textLabel) {
 
 	newRuleSet = oldRuleSet + "\n"+textRule;
 	CallableStatement cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::add_rule', 'hdbtextinclude', '"+newRuleSet+"')}");//"+textRule+"
-	cStmt.executeUpdate();
-	cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::Word_Rules', 'hdbtextrule', '"+includeRule+"')}");
-	success = cStmt.executeUpdate();
-	if (success == 0){
+	int val=cStmt.executeUpdate();
+	success = val;
+	if(success == 0){
 		try {
-			cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CLEAR('DLP', 'TestHana.HDBModule::add_Rule','hdbtexinclude' ) }");
+			cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::Word_Rules', 'hdbtextrule', '"+includeRule+"')}");
 			cStmt.execute();	
 			}catch(Exception e) {
 			} 
-		try {	
-			cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CLEAR('DLP', 'TestHana.HDBModule::Word_Rules','hdbtextrule' ) }");
+	}
+	
+	if (success == 0){
+		try {
+			cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CLEAR('DLP', 'TestHana.HDBModule::add_Rule','hdbtexinclude' ) }");
 			cStmt.execute();
-			cStmt.close();}catch(Exception e) {
+			cStmt.close();
+			}catch(Exception e) {
 			} 
 		 int maxid = io.poc.text.anym.dbservices.HdbServices.getMaxId("queryTable");
 		 int inputID = maxid+1;
@@ -423,10 +427,23 @@ public static int writeTextRule(String textRule,String textLabel) {
 		   int rows = stmt.executeUpdate(setQueryLabel);
 		   if(rows != 0) {
 			   connection.commit();  
+		   }else {
+			    cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::add_rule', 'hdbtextinclude', '"+oldRuleSet+"')}");//"+textRule+"
+				 cStmt.executeUpdate(); 
+				 cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::Word_Rules', 'hdbtextrule', '"+includeRule+"')}");
+				 cStmt.execute();
+				 cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CLEAR('DLP', 'TestHana.HDBModule::add_Rule','hdbtexinclude' ) }");
+			     cStmt.execute();
+				 cStmt.close();
 		   }
 	 }else {
 		 cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::add_rule', 'hdbtextinclude', '"+oldRuleSet+"')}");//"+textRule+"
 		 cStmt.executeUpdate(); 
+		 cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::Word_Rules', 'hdbtextrule', '"+includeRule+"')}");
+		 cStmt.execute();
+		 cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CLEAR('DLP', 'TestHana.HDBModule::add_Rule','hdbtexinclude' ) }");
+	     cStmt.execute();
+		 cStmt.close();
 	 }
 	
 	} else success = 2;  
@@ -434,8 +451,21 @@ public static int writeTextRule(String textRule,String textLabel) {
 	}
 	catch(Exception e) {
 	}finally {
+		 if (success == 1) {
+			 try {
+			 CallableStatement cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::add_rule', 'hdbtextinclude', '"+oldRuleSet+"')}");//"+textRule+"
+			 cStmt.executeUpdate();  
+			 cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::Word_Rules', 'hdbtextrule', '"+includeRule+"')}");
+			 cStmt.execute();
+			 cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CLEAR('DLP', 'TestHana.HDBModule::add_Rule','hdbtexinclude' ) }");
+		     cStmt.execute();
+		     cStmt.close();
+		 }catch (SQLException e) {}
+			 
+		 }
+		 
 	     if (connection != null) {
-	         try {	        	
+	         try {	
 	        	 connection.close();
 	         } catch (SQLException e) {}
 	     }
