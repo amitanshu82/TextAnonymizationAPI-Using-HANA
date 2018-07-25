@@ -406,17 +406,21 @@ public static int writeTextRule(String textRule,String textLabel) {
 	success = val;
 	if(success == 0){
 		try {
+			success = 1;
 			cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::Word_Rules', 'hdbtextrule', '"+includeRule+"')}");
-			cStmt.execute();	
+			cStmt.execute();
+			success = 0;
 			}catch(Exception e) {
 			} 
 	}
 	
 	if (success == 0){
 		try {
+			success = 1;
 			cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CLEAR('DLP', 'TestHana.HDBModule::add_Rule','hdbtexinclude' ) }");
 			cStmt.execute();
 			cStmt.close();
+			success = 0;
 			}catch(Exception e) {
 			} 
 		 int maxid = io.poc.text.anym.dbservices.HdbServices.getMaxId("queryTable");
