@@ -68,6 +68,47 @@ public class TextAnonymizationApiAppController {
 			return textanonym;
 	  }
  
+	@RequestMapping(value = "/processtext/json", method = RequestMethod.POST)
+	
+	  public List<TextAnonym> processText(@RequestBody TextInput inputText) throws SQLException
+	  {
+		TextInput textin = new TextInput();
+		ArrayList<TextInput> textinput = new ArrayList<TextInput>();
+		ArrayList<TextAnonym> textanonym = new ArrayList<TextAnonym>();
+		int insertID = 0;
+		int maxid = io.poc.text.anym.dbservices.HdbServices.getMaxId("inputTable");
+		insertID = maxid + 1;
+		String text_input = inputText.getText();
+	    text_input = text_input.replace("'" , "");
+	    text_input = text_input.replace("‘" , "");
+		textin.setId(insertID);
+		textin.setText(text_input);
+		textinput.add(textin);	
+		
+//Get the last id from Input table	
+		int rows = io.poc.text.anym.dbservices.HdbServices.insertData(textinput);
+		System.out.println("No or rows insertde " + rows );
+
+		textanonym = io.poc.text.anym.dbservices.HdbServices.getData(insertID);
+		
+		int loop = 0;
+	do{
+		if (textanonym.isEmpty() ){
+	try {		
+	        Thread.sleep(2000);
+			textanonym= io.poc.text.anym.dbservices.HdbServices.getData(insertID);
+			
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}
+		loop++;
+		}while(loop <=5 );
+			
+			return textanonym;
+	  }
+	
 	@RequestMapping(value = "/gettextanonym"+"/{ID}", method = RequestMethod.GET)
 	
 	public List<TextAnonym > getText( @PathVariable(value="ID") Integer id ) throws SQLException
