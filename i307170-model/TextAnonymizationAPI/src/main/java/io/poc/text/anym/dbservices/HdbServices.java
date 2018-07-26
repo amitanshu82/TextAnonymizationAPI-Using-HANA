@@ -27,7 +27,6 @@ static int maxID = 0;
 
 
 
-
 public static int getinputtables()
 {
 	Connection connection = null;
@@ -389,7 +388,7 @@ public static int writeTextRule(String textRule,String textLabel) {
 	String[] arrayRuleSet = includeData.split("\n"); 
 	for (int i=0; i < arrayRuleSet.length; i++)
     {
-		if ( i == 2  ) 
+		if ( i == 0  ) 
 		oldRuleSet = arrayRuleSet[i] ;
 		else
 			oldRuleSet = oldRuleSet +"\n"+ arrayRuleSet[i] ;
@@ -410,15 +409,15 @@ public static int writeTextRule(String textRule,String textLabel) {
 	   success = 0;
 	    }catch(Exception e) {
 	  } 
-	if(success == 0){
-		try {
-			success = 1;
-			cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::Word_Rules', 'hdbtextrule', '"+includeRule+"')}");
-			cStmt.execute();
-			success = 0;
-			}catch(Exception e) {
-			} 
-	}
+//	if(success == 0){
+//		try {
+//			success = 1;
+//			cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::Word_Rules', 'hdbtextrule', '"+includeRule+"')}");
+//			cStmt.executeUpdate();
+//			success = 0;
+//			}catch(Exception e) {
+//			} 
+//	}
 	
 	if (success == 0){
 		try {
@@ -443,8 +442,8 @@ public static int writeTextRule(String textRule,String textLabel) {
 		   }else {
 			    cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::add_rule', 'hdbtextinclude', '"+oldRuleSet+"')}");//"+textRule+"
 				 cStmt.executeUpdate(); 
-				 cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::Word_Rules', 'hdbtextrule', '"+includeRule+"')}");
-				 cStmt.execute();
+//				 cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::Word_Rules', 'hdbtextrule', '"+includeRule+"')}");
+//				 cStmt.executeUpdate();
 				 cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CLEAR('DLP', 'TestHana.HDBModule::add_rule','hdbtexinclude' ) }");
 			     cStmt.execute();
 				 cStmt.close();
@@ -452,8 +451,8 @@ public static int writeTextRule(String textRule,String textLabel) {
 	 }else {
 		 cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::add_rule', 'hdbtextinclude', '"+oldRuleSet+"')}");//"+textRule+"
 		 cStmt.executeUpdate(); 
-		 cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::Word_Rules', 'hdbtextrule', '"+includeRule+"')}");
-		 cStmt.execute();
+//		 cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::Word_Rules', 'hdbtextrule', '"+includeRule+"')}");
+//		 cStmt.executeUpdate();
 		 cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CLEAR('DLP', 'TestHana.HDBModule::add_rule','hdbtexinclude' ) }");
 	     cStmt.execute();
 		 cStmt.close();
@@ -468,8 +467,8 @@ public static int writeTextRule(String textRule,String textLabel) {
 			 try {
 			 cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::add_rule', 'hdbtextinclude', '"+oldRuleSet+"')}");//"+textRule+"
 			 cStmt.executeUpdate();  
-			 cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::Word_Rules', 'hdbtextrule', '"+includeRule+"')}");
-			 cStmt.execute();
+//			 cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CREATE('DLP', 'TestHana.HDBModule::Word_Rules', 'hdbtextrule', '"+includeRule+"')}");
+//			 cStmt.executeUpdate();
 			 cStmt = connection.prepareCall("{CALL TEXT_CONFIGURATION_CLEAR('DLP', 'TestHana.HDBModule::add_rule','hdbtexinclude' ) }");
 		     cStmt.execute();
 		     cStmt.close();
