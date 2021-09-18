@@ -1,1 +1,1 @@
-# HANA_APP
+# This application provide APIs which can be used for Text Anonymization. For providing this functionality of text anonymization, I am using HANA Db to store the input data and then uses the rules created on HANA Db to generate tags and find the anonymizing text. 
